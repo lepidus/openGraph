@@ -132,103 +132,31 @@ class OpenGraphPlugin extends GenericPlugin {
 
 		if ($submissionCoverImage = $submission->getCurrentPublication()->getLocalizedCoverImageUrl($submission->getData('contextId'))){
 			$openGraphImage = $submissionCoverImage;
-
 		}
 		$templateMgr->addHeader('openGraphImage', '<meta name="image" property="og:image" content="' . htmlspecialchars($openGraphImage) . '"/>');
 
 		if ($datePublished = $publication->getData('datePublished')) { 
 			$openGraphDateName = $applicationName == "omp" ? "book:release_date" : "article:published_time";
-
 			$templateMgr->addHeader('openGraphDate', '<meta name="' . $openGraphDateName . '" content="' . strftime('%Y-%m-%d', strtotime($datePublished)) . '"/>');
 		}
 
 		if ($applicationName == "omp") { 
 			$publicationFormats = $submission->getCurrentPublication()->getData('publicationFormats');
-
 			foreach ($publicationFormats as $publicationFormat) {
-
-
-
 				$identificationCodes = $publicationFormat->getIdentificationCodes();
-
-
-
-
 				while ($identificationCode = $identificationCodes->next()) {
-
-
 					if ($identificationCode->getCode() == "02" || $identificationCode->getCode() == "15") {
-
-
-
-
-
 						$templateMgr->addHeader('openGraphBookIsbn', '<meta name="book:isbn" content="' . htmlspecialchars($identificationCode->getValue()) . '"/>');
-
-
-
-
-
-
-
-
 					}
 				}
 			}
 		}
 
 		$i=0;
-
-
 		$publicationKeywords = $publication->getData('keywords');
-
-
-
-
-
-
 		foreach ($publicationKeywords as $locale => $localeKeywords) {
-
-
-
-
-
-
-
-
-
 			foreach ($localeKeywords as $keyword) {
-
-
-
-
 				$templateMgr->addHeader('openGraphArticleTag' . $i++, '<meta name="' . $objectType . ':tag" content="' . htmlspecialchars($keyword) . '"/>');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			}
 		}
 
@@ -240,7 +168,6 @@ class OpenGraphPlugin extends GenericPlugin {
 	 * @return string
 	 */
 	function getDisplayName() {
-
 		return __('plugins.generic.openGraph.name');
 	}
 
@@ -249,7 +176,6 @@ class OpenGraphPlugin extends GenericPlugin {
 	 * @return string
 	 */
 	function getDescription() {
-
 		return __('plugins.generic.openGraph.description');
 	}
 }
