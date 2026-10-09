@@ -121,7 +121,7 @@ class OpenGraphPlugin extends GenericPlugin {
 		$templateMgr->addHeader('openGraphTitle', '<meta property="og:title" content="' . htmlspecialchars($publication->getLocalizedFullTitle($submission->getLocale())) . '"/>');
 		if ($abstract = PKPString::html2text($publication->getLocalizedData('abstract', $submission->getLocale()))) $templateMgr->addHeader('openGraphDescription', '<meta name="description" property="og:description" content="' . htmlspecialchars($abstract) . '"/>');
 		$templateMgr->addHeader('openGraphUrl', '<meta property="og:url" content="' . htmlspecialchars($request->url(null, $submissionPath[0], $submissionPath[1], array($submission->getBestId()))) . '"/>');
-		if ($locale = $submission->getLocale()) $templateMgr->addHeader('openGraphLocale', '<meta name="og:locale" content="' . htmlspecialchars($locale) . '"/>');
+		if ($locale = $submission->getLocale()) $templateMgr->addHeader('openGraphLocale', '<meta property="og:locale" content="' . htmlspecialchars($locale) . '"/>');
 
 		$openGraphImage = "";
 		if ($contextPageHeaderLogo = $context->getLocalizedData('pageHeaderLogoImage')){
@@ -139,7 +139,7 @@ class OpenGraphPlugin extends GenericPlugin {
 
 		if ($datePublished = $publication->getData('datePublished')) { 
 			$openGraphDateName = $applicationName == "omp" ? "book:release_date" : "article:published_time";
-			$templateMgr->addHeader('openGraphDate', '<meta name="' . $openGraphDateName . '" content="' . strftime('%Y-%m-%d', strtotime($datePublished)) . '"/>');
+			$templateMgr->addHeader('openGraphDate', '<meta property="' . $openGraphDateName . '" content="' . strftime('%Y-%m-%d', strtotime($datePublished)) . '"/>');
 		}
 
 		if ($applicationName == "omp") { 
@@ -148,7 +148,7 @@ class OpenGraphPlugin extends GenericPlugin {
 				$identificationCodes = $publicationFormat->getIdentificationCodes();
 				while ($identificationCode = $identificationCodes->next()) {
 					if ($identificationCode->getCode() == "02" || $identificationCode->getCode() == "15") {
-						$templateMgr->addHeader('openGraphBookIsbn', '<meta name="book:isbn" content="' . htmlspecialchars($identificationCode->getValue()) . '"/>');
+						$templateMgr->addHeader('openGraphBookIsbn', '<meta property="book:isbn" content="' . htmlspecialchars($identificationCode->getValue()) . '"/>');
 					}
 				}
 			}
@@ -159,7 +159,7 @@ class OpenGraphPlugin extends GenericPlugin {
 		$keywords = $dao->getKeywords($publication->getId(), array(Locale::getLocale()));
 		foreach ($keywords as $locale => $localeKeywords) {
 			foreach ($localeKeywords as $keyword) {
-				$templateMgr->addHeader('openGraphArticleTag' . $i++, '<meta name="' . $objectType . ':tag" content="' . htmlspecialchars($keyword) . '"/>');
+				$templateMgr->addHeader('openGraphArticleTag' . $i++, '<meta property="' . $objectType . ':tag" content="' . htmlspecialchars($keyword) . '"/>');
 			}
 		}
 
