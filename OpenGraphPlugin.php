@@ -97,17 +97,20 @@ class OpenGraphPlugin extends GenericPlugin {
 		$context = $request->getContext();
 		if ($applicationName == "ops"){
 			$submission = $args[1];
+			$publication = $args[2];
 			$submissionPath = array('preprint', 'view');
 			$objectType = "article";
 		}
 		elseif ($applicationName == "omp"){
 			$submission = $args[1];
+			$publication = $args[2];
 			$submissionPath = array('catalog', 'book');
 			$objectType = "book";
 		}
 		else {
 			$issue = $args[1];
 			$submission = $args[2];
+			$publication = $args[3];
 			$submissionPath = array('article', 'view');
 			$objectType = "article";
 		}
@@ -115,8 +118,8 @@ class OpenGraphPlugin extends GenericPlugin {
 		$templateMgr = TemplateManager::getManager($request);
 		$templateMgr->addHeader('openGraphSiteName', '<meta property="og:site_name" content="' . htmlspecialchars($context->getName($context->getPrimaryLocale())) . '"/>');
 		$templateMgr->addHeader('openGraphObjectType', '<meta property="og:type" content="' . htmlspecialchars($objectType) . '"/>');
-		$templateMgr->addHeader('openGraphTitle', '<meta property="og:title" content="' . htmlspecialchars($submission->getFullTitle($submission->getLocale())) . '"/>');
-		if ($abstract = PKPString::html2text($submission->getAbstract($submission->getLocale()))) $templateMgr->addHeader('openGraphDescription', '<meta name="description" property="og:description" content="' . htmlspecialchars($abstract) . '"/>');
+		$templateMgr->addHeader('openGraphTitle', '<meta property="og:title" content="' . htmlspecialchars($publication->getLocalizedFullTitle($submission->getLocale())) . '"/>');
+		if ($abstract = PKPString::html2text($publication->getLocalizedData('abstract', $submission->getLocale()))) $templateMgr->addHeader('openGraphDescription', '<meta name="description" property="og:description" content="' . htmlspecialchars($abstract) . '"/>');
 		$templateMgr->addHeader('openGraphUrl', '<meta property="og:url" content="' . $request->url(null, $submissionPath[0], $submissionPath[1], array($submission->getBestId())) . '"/>');
 		if ($locale = $submission->getLocale()) $templateMgr->addHeader('openGraphLocale', '<meta name="og:locale" content="' . htmlspecialchars($locale) . '"/>');
 
@@ -129,18 +132,18 @@ class OpenGraphPlugin extends GenericPlugin {
 			$openGraphImage = $issueCoverImage;
 		}
 
-		if ($submissionCoverImage = $submission->getCurrentPublication()->getLocalizedCoverImageUrl($submission->getData('contextId'))){
+		if ($submissionCoverImage = $publication->getLocalizedCoverImageUrl($submission->getData('contextId'))){
 			$openGraphImage = $submissionCoverImage;
 		}
 		$templateMgr->addHeader('openGraphImage', '<meta name="image" property="og:image" content="' . htmlspecialchars($openGraphImage) . '"/>');
 
-		if ($datePublished = $submission->getDatePublished()) { 
+		if ($datePublished = $publication->getData('datePublished')) { 
 			$openGraphDateName = $applicationName == "omp" ? "book:release_date" : "article:published_time";
 			$templateMgr->addHeader('openGraphDate', '<meta name="' . $openGraphDateName . '" content="' . strftime('%Y-%m-%d', strtotime($datePublished)) . '"/>');
 		}
 
 		if ($applicationName == "omp") { 
-			$publicationFormats = $submission->getCurrentPublication()->getData('publicationFormats');
+			$publicationFormats = $publication->getData('publicationFormats');
 			foreach ($publicationFormats as $publicationFormat) {
 				$identificationCodes = $publicationFormat->getIdentificationCodes();
 				while ($identificationCode = $identificationCodes->next()) {
@@ -153,7 +156,7 @@ class OpenGraphPlugin extends GenericPlugin {
 
 		$i=0;
 		$dao = DAORegistry::getDAO('SubmissionKeywordDAO');
-		$keywords = $dao->getKeywords($submission->getCurrentPublication()->getId(), array(Locale::getLocale()));
+		$keywords = $dao->getKeywords($publication->getId(), array(Locale::getLocale()));
 		foreach ($keywords as $locale => $localeKeywords) {
 			foreach ($localeKeywords as $keyword) {
 				$templateMgr->addHeader('openGraphArticleTag' . $i++, '<meta name="' . $objectType . ':tag" content="' . htmlspecialchars($keyword) . '"/>');
