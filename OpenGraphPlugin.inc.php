@@ -171,7 +171,7 @@ class OpenGraphPlugin extends GenericPlugin
 
         $i = 0;
         $dao = DAORegistry::getDAO('SubmissionKeywordDAO');
-        $keywords = $dao->getKeywords($publication->getId(), array(AppLocale::getLocale()));
+        $keywords = $dao->getKeywords($publication->getId(), array($submission->getLocale()));
         foreach ($keywords as $locale => $localeKeywords) {
             foreach ($localeKeywords as $keyword) {
                 $templateMgr->addHeader('openGraphArticleTag' . $i++, '<meta property="' . $objectType . ':tag" content="' . htmlspecialchars($keyword) . '"/>');
