@@ -19,7 +19,6 @@ use APP\core\Application;
 use APP\template\TemplateManager;
 use PKP\core\PKPString;
 use PKP\db\DAORegistry;
-use PKP\facades\Locale;
 use PKP\plugins\GenericPlugin;
 use PKP\plugins\Hook;
 
@@ -190,7 +189,7 @@ class OpenGraphPlugin extends GenericPlugin
 
         $i = 0;
         $dao = DAORegistry::getDAO('SubmissionKeywordDAO');
-        $keywords = $dao->getKeywords($publication->getId(), array(Locale::getLocale()));
+        $keywords = $dao->getKeywords($publication->getId(), array($submission->getLocale()));
         foreach ($keywords as $locale => $localeKeywords) {
             foreach ($localeKeywords as $keyword) {
                 $templateMgr->addHeader('openGraphArticleTag' . $i++, '<meta property="' . $objectType . ':tag" content="' . htmlspecialchars($keyword) . '"/>');
