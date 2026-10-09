@@ -117,7 +117,13 @@ class OpenGraphPlugin extends GenericPlugin
         if ($abstract = trim((string) preg_replace('/\s+/u', ' ', PKPString::html2text($publication->getLocalizedData('abstract', $submission->getLocale()))))) {
             $templateMgr->addHeader('openGraphDescription', '<meta name="description" property="og:description" content="' . htmlspecialchars($abstract) . '"/>');
         }
-        $templateMgr->addHeader('openGraphUrl', '<meta property="og:url" content="' . htmlspecialchars($request->url(null, $submissionPath[0], $submissionPath[1], array($submission->getBestId()))) . '"/>');
+        $urlPath = array($submission->getBestId());
+        $currentPublication = $submission->getCurrentPublication();
+        if ($currentPublication && $publication->getId() != $currentPublication->getId()) {
+            $urlPath[] = 'version';
+            $urlPath[] = $publication->getId();
+        }
+        $templateMgr->addHeader('openGraphUrl', '<meta property="og:url" content="' . htmlspecialchars($request->url(null, $submissionPath[0], $submissionPath[1], $urlPath)) . '"/>');
         if ($locale = $submission->getLocale()) {
             $templateMgr->addHeader('openGraphLocale', '<meta property="og:locale" content="' . htmlspecialchars($this->getOpenGraphLocale($locale)) . '"/>');
         }
